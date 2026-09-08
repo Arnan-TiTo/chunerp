@@ -128,6 +128,22 @@ function readSeedVersion(target: SqliteConnection): string | null {
   )
 }
 
+/** ค่าที่ระบบจำไว้ในฐานข้อมูล ใช้กับงานที่ต้องทำครั้งเดียวตอนสร้างฐานใหม่ */
+export function readMeta(key: string): string | null {
+  return (
+    db().one<{ value: string }>(`SELECT value FROM schema_meta WHERE key = ?`, [key])?.value ??
+    null
+  )
+}
+
+export function writeMeta(key: string, value: string) {
+  db().run(
+    `INSERT INTO schema_meta (key, value) VALUES (?, ?)
+     ON CONFLICT (key) DO UPDATE SET value = excluded.value`,
+    [key, value],
+  )
+}
+
 function writeSeedVersion(target: SqliteConnection) {
   target.run(
     `INSERT INTO schema_meta (key, value) VALUES ('seed_version', ?)

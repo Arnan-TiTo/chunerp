@@ -21,11 +21,13 @@ import { ConfirmDialog, Modal } from '@/components/feedback/Modal'
 import { useToast } from '@/components/feedback/Toast'
 import { Can, FullPageLoader } from '@/features/auth/guards'
 import { useAuth } from '@/features/auth/AuthProvider'
-import { formatDateTimeTH, formatNumber, formatWeight } from '@/utils/format'
+import { formatCurrency, formatDateTimeTH, formatNumber, formatWeight } from '@/utils/format'
 import { toUserMessage } from '@/utils/errors'
 import {
+  useCompletePurchase,
   useFreshWeighActions,
   useFreshWeighSlip,
+  usePurchaseSummary,
   useShellWeighActions,
   useShellWeighSlip,
   useTicket,
@@ -47,9 +49,15 @@ export function WeighingPage() {
   const navigate = useNavigate()
   const { can } = useAuth()
 
+  const toast = useToast()
   const { data: ticket, isPending: ticketPending, error: ticketError } = useTicket(queueId)
   const { data: fresh, isPending, error, refetch } = useFreshWeighSlip(queueId)
   const { data: shell } = useShellWeighSlip(queueId)
+  // The counter closes the purchase from here, so the invoice it is about to
+  // close has to be on screen — the amount is what they read out to the farmer.
+  const { data: summary } = usePurchaseSummary(queueId)
+  const complete = useCompletePurchase(queueId)
+  const [completeOpen, setCompleteOpen] = useState(false)
 
   if (ticketPending || isPending) return <FullPageLoader label="กำลังโหลดข้อมูลการชั่ง..." />
   if (ticketError) return <ErrorState error={ticketError} />
@@ -57,6 +65,20 @@ export function WeighingPage() {
   if (!ticket || !fresh) return <ErrorState error={new Error('ไม่พบคิว')} />
 
   const totalWeight = fresh.totalCocoonWeight + fresh.totalScrapWeight
+  const done = ticket.status === 'COMPLETED'
+
+  const doComplete = async () => {
+    try {
+      await complete.mutateAsync()
+      toast.success(
+        'ปิดรายการรับซื้อแล้ว',
+        `${summary?.transactionNo ?? ''} — ส่งยอดไปรอตัดหนี้และเบิกจ่ายแล้ว`,
+      )
+      setCompleteOpen(false)
+    } catch (err) {
+      toast.error('ปิดรายการไม่สำเร็จ', toUserMessage(err))
+    }
+  }
 
   return (
     <>
@@ -89,28 +111,81 @@ export function WeighingPage() {
                 <LinkButton
                   to={`/receiving/${queueId}/receipt?print=1`}
                   target="_blank"
-                  variant="primary"
+                  variant={done ? 'primary' : 'ghost'}
                   iconLeft="download"
                 >
                   พิมพ์ใบรับซื้อ
                 </LinkButton>
               </Can>
+              {/* ปิดรายการคือขั้นที่ทำให้ยอดไปโผล่ที่ตัดหนี้และเบิกจ่าย
+                  เดิมอยู่แต่ในหน้าใบรับซื้อ ซึ่งจุดชั่งไม่ได้เปิด */}
+              {!done && (
+                <Can permission="purchase:complete">
+                  <Button
+                    variant="green"
+                    iconLeft="check-circle"
+                    onClick={() => setCompleteOpen(true)}
+                  >
+                    ปิดรายการรับซื้อ
+                  </Button>
+                </Can>
+              )}
             </>
           )
         }
       />
 
-      {fresh.locked && (
+      {fresh.locked && !done && (
+        <InfoBanner
+          tone="warning"
+          icon="alert"
+          title="ล็อกน้ำหนักแล้ว — เหลือปิดรายการรับซื้อ"
+          className="mb-[18px]"
+        >
+          พิมพ์ใบรับซื้อให้เกษตรกร แล้วกด <strong>ปิดรายการรับซื้อ</strong> เพื่อส่งยอด
+          {summary?.grossAmount ? ` ${formatCurrency(summary.grossAmount)} ` : ' '}
+          ไปรอตัดหนี้และเบิกจ่ายของรอบนี้ — ถ้ายังไม่กด ยอดจะค้างอยู่ที่จุดชั่ง
+          ฝ่ายบัญชีจะยังตัดหนี้และจ่ายเงินให้เกษตรกรไม่ได้
+        </InfoBanner>
+      )}
+
+      {done && (
         <InfoBanner
           tone="success"
           icon="check-circle"
-          title="ล็อกน้ำหนักแล้ว — พิมพ์ใบรับซื้อให้เกษตรกร"
+          title="ปิดรายการรับซื้อแล้ว — ส่งไปรอตัดหนี้และเบิกจ่าย"
           className="mb-[18px]"
         >
-          มอบใบรับซื้อรังไหมสดให้เกษตรกรนำไปติดต่อฝ่ายบัญชี เพื่อเบิกจ่ายและตัดหนี้ของรอบนี้
-          — ระบบพิมพ์ 2 ชุด: ต้นฉบับสำหรับเกษตรกร และสำเนาสำหรับฝ่ายบัญชี
+          มอบใบรับซื้อรังไหมสดให้เกษตรกรนำไปติดต่อฝ่ายบัญชี — ระบบพิมพ์ 2 ชุด:
+          ต้นฉบับสำหรับเกษตรกร และสำเนาสำหรับฝ่ายบัญชี
         </InfoBanner>
       )}
+
+      <ConfirmDialog
+        open={completeOpen}
+        onClose={() => setCompleteOpen(false)}
+        onConfirm={() => void doComplete()}
+        loading={complete.isPending}
+        title="ปิดรายการรับซื้อ"
+        icon="check-circle"
+        confirmLabel="ปิดรายการ"
+        message={
+          <span>
+            ปิดใบรับซื้อ{' '}
+            <strong className="dash-num">{summary?.transactionNo ?? ''}</strong> ของ{' '}
+            <strong>{ticket.farmerName}</strong>
+            {summary?.grossAmount ? (
+              <>
+                {' '}
+                รวมรายได้ <strong>{formatCurrency(summary.grossAmount)}</strong>
+              </>
+            ) : null}
+            <br />
+            ยอดนี้จะถูกส่งไปรอตัดหนี้ของรอบนี้และตั้งรายการจ่ายเงินให้เกษตรกร
+            หลังจากนี้แก้ไขน้ำหนักไม่ได้
+          </span>
+        }
+      />
 
       <div className="grid gap-[18px] lg:grid-cols-12">
         <div className="flex flex-col gap-[18px] lg:col-span-8">

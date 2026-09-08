@@ -39,6 +39,8 @@ import {
   findImportBySession,
   loadDebts,
   loadDeductions,
+  readMeta,
+  writeMeta,
   loadExportBatches,
   loadFreshSlips,
   loadPayments,
@@ -57,7 +59,7 @@ import {
 } from './chunErpStore'
 import * as repo from './repositories'
 import { findSessions, floorWeightConnection, openFloorWeightDb } from './floorWeightStore'
-import type { SqliteConnection } from './engine'
+import { SEED_VERSION, type SqliteConnection } from './engine'
 
 /**
  * Brings both databases up before the mock backend serves its first request.
@@ -358,21 +360,34 @@ function hydrate() {
   }
 
   settleFinishedRounds()
+  // ทุกการรับซื้อที่ปิดแล้วต้องมีรายการรอจ่าย และยอดของเกษตรกรคำนวณใหม่เสมอ
+  ensurePayments()
+  refreshFarmerTotals()
 }
 
 /** The running number at the end of a document number, or 0. */
 const tailNo = (docNo: string) => Number(docNo.slice(docNo.lastIndexOf('-') + 1)) || 0
 
+/** ทำเครื่องหมายว่าปิดยอดให้รอบตัวอย่างไปแล้ว */
+const FIXTURE_SETTLED = 'fixture_settled'
+
 /**
- * A round that has been bought is a round that has been paid for.
+ * ปิดยอดหนี้ให้ *รอบตัวอย่าง* ครั้งเดียว ตอนสร้างฐานข้อมูลใหม่.
  *
  * The fixture cannot do this itself: the invoice is derived from weigh slips
- * that only exist once this database is open. So the completed round's debt is
- * cleared here, against its own invoice — and only if nothing has cleared it
- * yet, so a restored database keeps the deduction it already has rather than
- * paying it twice.
+ * that only exist once this database is open, so the finished round's debt is
+ * cleared here instead — once.
+ *
+ * "Once" is the whole point. This used to run on every boot against every
+ * COMPLETED ticket, which meant a purchase the counter closed today had its
+ * debt quietly deducted on the next page load — with an audit row naming an
+ * accountant who never touched it. ตัดหนี้ is a decision a person makes on the
+ * ตัดหนี้ screen, with a preview and a confirmation; boot does not get to make
+ * it for them.
  */
 function settleFinishedRounds() {
+  if (readMeta(FIXTURE_SETTLED) === SEED_VERSION) return
+
   for (const ticket of queueTickets) {
     if (ticket.status !== 'COMPLETED') continue
 
@@ -408,8 +423,14 @@ function settleFinishedRounds() {
     purchases.set(ticket.id, buildPurchase(ticket))
   }
 
-  ensurePayments()
+  writeMeta(FIXTURE_SETTLED, SEED_VERSION)
+}
 
+/**
+ * ยอดหนี้คงค้างและยอดซื้อสะสมของเกษตรกรคำนวณใหม่ทุกครั้งที่เปิดระบบ
+ * เพราะทั้งคู่เป็นผลลัพธ์ของเอกสาร ไม่ใช่ตัวเลขที่เก็บไว้เอง
+ */
+function refreshFarmerTotals() {
   for (const farmer of farmers) {
     refreshFarmerDebt(farmer.id)
     farmer.totalPurchaseAmount =
