@@ -1,0 +1,16 @@
+{
+  // Cloudflare Workers — เสิร์ฟไฟล์ static อย่างเดียว ไม่มีโค้ดฝั่งเซิร์ฟเวอร์
+  //
+  // Cloudflare เลิกเปิดให้สร้างโปรเจกต์ Pages ใหม่แล้ว งานเดิมที่ Pages ทำ
+  // (เสิร์ฟไฟล์ + fallback ให้ SPA) ย้ายมาอยู่ในบล็อก assets ด้านล่างนี้แทน
+  //
+  // ไม่มี "main" เพราะไม่มี Worker script — มีแต่ไฟล์ในโฟลเดอร์ dist
+  "name": "chunerp",
+  "compatibility_date": "2026-09-08",
+  "assets": {
+    "directory": "./dist",
+    // ทุก path ที่ไม่ตรงกับไฟล์จริง ให้ตอบ index.html เพื่อให้ React Router
+    // จัดการเอง ไม่งั้นเปิด /debts/D-0001 ตรง ๆ หรือกด refresh จะได้ 404
+    "not_found_handling": "single-page-application"
+  }
+}
