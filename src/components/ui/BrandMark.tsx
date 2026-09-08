@@ -1,41 +1,28 @@
 import { cn } from '@/utils/cn'
 import { APP_NAME } from '@/constants'
 
+/** ไฟล์โลโก้จริงจาก kamnanchul.com — พื้นหลังโปร่งใส วางบนสีพื้นไหนก็ได้ */
+const LOGO_SRC = '/brand/kamnanchul-logo.png'
+/** สัดส่วนจริงของไฟล์ 242 × 150 */
+const LOGO_RATIO = 242 / 150
+
 /**
- * Chul Farm mark — a mulberry leaf over a silk cocoon, drawn in the same
- * paper-cut greens and teak tones as the key art.
+ * โลโก้ไร่กำนันจุล.
+ *
+ * `size` คือ *ความสูง* ไม่ใช่ด้านกว้าง เพราะโลโก้เป็นแนวนอน — ที่ทุกจุดในระบบ
+ * สิ่งที่ต้องเท่ากันคือความสูงให้พอดีกับแถบหรือบรรทัดที่มันอยู่ ส่วนความกว้าง
+ * ปล่อยให้เป็นไปตามสัดส่วนจริง ห้ามยืดบีบโลโก้บริษัท
  */
 export function BrandLogo({ size = 34, className }: Readonly<{ size?: number; className?: string }>) {
   return (
-    <svg
-      viewBox="0 0 48 48"
-      width={size}
+    <img
+      src={LOGO_SRC}
+      alt={APP_NAME}
+      width={Math.round(size * LOGO_RATIO)}
       height={size}
-      className={cn('shrink-0', className)}
-      role="img"
-      aria-label={APP_NAME}
-    >
-      {/* cocoon — the deep shade green */}
-      <ellipse cx="24" cy="31" rx="10.5" ry="13" fill="#2a5340" />
-      <ellipse cx="24" cy="31" rx="6.5" ry="9" fill="#3d6b53" opacity="0.6" />
-      {/* mulberry leaf — rice-field green over sunlit meadow */}
-      <path d="M24 20C24 11 30.5 5 39 4c.8 8.4-2 14.2-7 17.2-3 1.8-6 2.3-8 1.8Z" fill="#9cb35e" />
-      <path
-        d="M37 6c-5 3.6-9.5 8.4-12.4 14.8"
-        stroke="#5f7a3c"
-        strokeWidth="1.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      {/* silk thread — teak */}
-      <path
-        d="M13 40c4-2.5 6-6 6-10"
-        stroke="#a8763f"
-        strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
-      />
-    </svg>
+      className={cn('shrink-0 select-none object-contain', className)}
+      draggable={false}
+    />
   )
 }
 
@@ -45,11 +32,12 @@ export function BrandMark({
 }: Readonly<{ compact?: boolean; className?: string }>) {
   return (
     <span className={cn('flex items-center gap-2.5', className)}>
-      <BrandLogo size={32} />
+      <BrandLogo size={46} />
+      {/* ชื่อไร่อยู่ในตัวโลโก้อยู่แล้ว ข้างนอกจึงบอกแค่ว่านี่คือระบบอะไร */}
       {!compact && (
-        <span className="min-w-0">
-          <span className="block truncate text-[1.05rem] font-bold leading-tight tracking-[.2px] text-forest">
-            ไร่กำนัน<span className="text-sage">จุล</span>
+        <span className="min-w-0 border-l border-line-soft pl-2.5">
+          <span className="block truncate text-[.82rem] font-bold leading-tight text-forest">
+            ระบบจัดการไหม
           </span>
           <span className="block truncate text-[.62rem] font-semibold uppercase tracking-[1.2px] text-ink-faint">
             Silk Management

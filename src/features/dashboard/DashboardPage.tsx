@@ -87,10 +87,7 @@ export function DashboardPage() {
         )}
       >
         <div className="min-w-0">
-          <h2 className="mb-0.5 flex items-center gap-2 text-[1.15rem] font-bold">
-            สวัสดี {user?.displayName}
-            <span aria-hidden="true">👋</span>
-          </h2>
+          <h2 className="mb-0.5 text-[1.15rem] font-bold">สวัสดี {user?.displayName}</h2>
           <p className="text-[.84rem] text-white/80">{workType.description}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

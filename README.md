@@ -206,7 +206,7 @@ label (§3).
 | `npm run build`     | typecheck then production build              |
 | `npm run preview`   | serve the production build                   |
 
-Current status: **typecheck ✅ · lint ✅ · 109 tests ✅ · build ✅**
+Current status: **typecheck ผ่าน · lint ผ่าน · 180 tests ผ่าน · build ผ่าน**
 
 ---
 

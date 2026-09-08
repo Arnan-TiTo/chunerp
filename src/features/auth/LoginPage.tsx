@@ -118,11 +118,12 @@ export function LoginPage() {
       {/* ── Login card ───────────────────────────────────────────────────── */}
       <section className="flex min-w-0 flex-[0_1_480px] items-center justify-center">
         <div className="w-full max-w-[480px] rounded-lg bg-white px-8 pb-10 pt-10 shadow-lg sm:px-12 sm:pt-12">
-          <div className="mb-7 flex items-center gap-3">
-            <BrandLogo size={52} />
-            <span>
-              <span className="block text-[1.28rem] font-bold tracking-[.2px] text-forest">
-                ไร่กำนัน<span className="text-sage">จุล</span>
+          {/* ชื่อไร่อยู่ในโลโก้แล้ว เขียนซ้ำข้าง ๆ จะกลายเป็นอ่านชื่อสองรอบ */}
+          <div className="mb-7 flex items-center gap-3.5">
+            <BrandLogo size={64} />
+            <span className="border-l border-line-soft pl-3.5">
+              <span className="block text-[1.02rem] font-bold tracking-[.2px] text-forest">
+                ระบบจัดการไหม
               </span>
               <span className="block text-[.68rem] font-semibold uppercase tracking-[1.2px] text-ink-faint">
                 Silk Management System
