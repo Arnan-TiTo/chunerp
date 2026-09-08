@@ -11,6 +11,10 @@
     "directory": "./dist",
     // ทุก path ที่ไม่ตรงกับไฟล์จริง ให้ตอบ index.html เพื่อให้ React Router
     // จัดการเอง ไม่งั้นเปิด /debts/D-0001 ตรง ๆ หรือกด refresh จะได้ 404
+    //
+    // ตรงนี้ทำหน้าที่แทนไฟล์ public/_redirects ที่เคยมี — Workers ปฏิเสธกฎ
+    // `/* /index.html 200` เพราะมองว่าเป็นลูปวนไม่จบ ถ้าย้ายไป host อื่น
+    // (nginx / IIS / Netlify) ต้องไปตั้ง SPA fallback ที่ฝั่งนั้นแทน
     "not_found_handling": "single-page-application"
   }
 }
