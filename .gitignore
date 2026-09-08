@@ -1,0 +1,16 @@
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ไฟล์ .sqlite ที่สร้างจาก db/sqlite/*.sql — สร้างใหม่ได้ด้วย npm run db:build
+db/build/

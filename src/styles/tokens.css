@@ -1,0 +1,108 @@
+/* =========================================================================
+   FND-004 — Design Tokens
+   Palette sampled from the Chul Farm paper-cut key art
+   (Gemini_Generated_Image_56a89c56a89c56a8.jpeg): mint sky, cream clouds,
+   sage and olive foliage, teal-green shade under the stilt houses, warm teak
+   roofs, sand paths, and the indigo / mauve of the villagers' clothes.
+
+   Layout, spacing, radii and shadows still follow the ChewaChem Portal
+   system — only the colour system is drawn from the artwork.
+   ========================================================================= */
+:root {
+  /* Brand primitives ---------------------------------------------------- */
+
+  /* Deep shade beneath the stilt houses — the darkest green in the art. */
+  --forest: #2a5340;
+  --forest-dark: #1c3d2d;
+  --forest-light: #3d6b53;
+  --forest-soft: rgba(42, 83, 64, 0.10);
+
+  /* Rice-field and bush green. */
+  --sage: #6e8b54;
+  --sage-dark: #55703f;
+  --sage-soft: rgba(110, 139, 84, 0.13);
+
+  /* The pale yellow-green of the sunlit terraces. */
+  --meadow: #9cb35e;
+  --meadow-deep: #5f7a3c;
+  --meadow-soft: rgba(200, 205, 138, 0.28);
+
+  /* Teak roofs, cart wheel and the sand path. */
+  --tan: #a8763f;
+  --tan-dark: #7d5629;
+  --tan-soft: rgba(235, 196, 155, 0.32);
+
+  /* Villagers' indigo and the far hills. */
+  --indigo: #46617f;
+  --indigo-dark: #33485f;
+  --indigo-soft: rgba(70, 97, 127, 0.12);
+
+  /* The mauve sashes — used sparingly, for one work area. */
+  --mauve: #a5717f;
+  --mauve-dark: #855967;
+  --mauve-soft: rgba(194, 151, 161, 0.22);
+
+  /* Not in the artwork, but required for errors — a warm brick that sits
+     with the teak tones rather than fighting them. */
+  --clay: #9a4234;
+  --clay-soft: rgba(154, 66, 52, 0.1);
+
+  /* Surfaces ------------------------------------------------------------ */
+  --bg: #f3f6f1;
+  --surface: #ffffff;
+  --surface-sunken: #fafcf8;
+
+  --line: #dde5da;
+  --line-soft: #e9efe6;
+  --line-faint: #f1f5ef;
+
+  --text: #22302a;
+  --text-dim: #5c6b62;
+  --text-faint: #8a9890;
+
+  /* Shape & depth ------------------------------------------------------- */
+  --radius: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 2px 6px rgba(30, 50, 40, 0.05);
+  --shadow-md: 0 4px 12px rgba(30, 50, 40, 0.07);
+  --shadow-lg: 0 18px 40px rgba(30, 50, 40, 0.14);
+
+  --z-dropdown: 30;
+  --z-drawer: 50;
+  --z-modal: 60;
+  --z-toast: 80;
+
+  /* Layout -------------------------------------------------------------- */
+  --sidebar-w: 250px;
+  --topbar-h: 60px;
+
+  /* Status — colour is always paired with a label + icon (§3) ----------- */
+  --status-info-fg: var(--indigo);
+  --status-info-bg: var(--indigo-soft);
+
+  --status-success-fg: var(--meadow-deep);
+  --status-success-bg: var(--meadow-soft);
+
+  --status-warning-fg: var(--tan-dark);
+  --status-warning-bg: var(--tan-soft);
+
+  --status-danger-fg: var(--clay);
+  --status-danger-bg: var(--clay-soft);
+
+  --status-neutral-fg: var(--text-dim);
+  --status-neutral-bg: #e9eee6;
+
+  --status-active-fg: var(--forest);
+  --status-active-bg: var(--forest-soft);
+
+  /**
+   * Per-module accent. `--accent` / `--accent-soft` are re-bound on the shell
+   * whenever the user switches work area, so cards, bars and icon chips pick
+   * up the module colour without any component knowing which module is open.
+   */
+  --accent: var(--forest);
+  --accent-soft: var(--forest-soft);
+  --accent-deep: var(--forest-dark);
+}

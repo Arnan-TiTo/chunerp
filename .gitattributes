@@ -1,0 +1,16 @@
+# เก็บไฟล์ข้อความเป็น LF ในรีโปและในเครื่องเสมอ
+#
+# ถ้าปล่อยให้ Windows แปลงเป็น CRLF ตอน checkout วันหนึ่งจะมี commit ที่ diff
+# บวมทั้งไฟล์ทั้งที่แก้บรรทัดเดียว และ ESLint/Prettier จะเถียงกับ Git ไปตลอด
+* text=auto eol=lf
+
+# ไฟล์ไบนารี — ห้าม Git แตะเนื้อไฟล์
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.wasm  binary
+*.docx  binary
+*.pdf   binary
+*.sqlite binary
