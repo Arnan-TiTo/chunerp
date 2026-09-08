@@ -92,6 +92,7 @@ function Sidebar({ onNavigate }: Readonly<{ onNavigate?: () => void }>) {
 
 function WorkAreaSwitch() {
   const { workType, available, setWorkType } = useWorkArea()
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const boxRef = useRef<HTMLDivElement>(null)
 
@@ -139,6 +140,9 @@ function WorkAreaSwitch() {
                 onClick={() => {
                   setWorkType(wt.id)
                   setOpen(false)
+                  // เปลี่ยนประเภทงานแล้วต้องไปแดชบอร์ดของงานนั้น — ถ้าค้างอยู่
+                  // หน้าเดิม ผู้ใช้จะเห็นเมนูชุดใหม่แต่เนื้อหาของงานเก่า
+                  if (wt.id !== workType.id) navigate('/dashboard')
                 }}
                 className={cn(
                   'flex w-full items-center gap-2.5 px-3.5 py-[11px] text-left text-[.86rem] transition-colors',

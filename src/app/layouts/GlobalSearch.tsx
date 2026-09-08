@@ -123,7 +123,7 @@ export function GlobalSearch() {
           setQuery(e.target.value)
           setOpen(true)
         }}
-        className="w-full rounded border-[1.5px] border-line bg-sunken py-2 pl-8 pr-3 text-[.85rem] text-ink placeholder:text-ink-faint focus:border-forest focus:bg-white focus:outline-none"
+        className="w-full rounded border-[1.5px] border-line bg-white py-2 pl-8 pr-3 text-[.85rem] text-ink placeholder:text-ink-faint focus:border-forest focus:outline-none focus:ring-2 focus:ring-meadow/25"
       />
 
       {open && query.trim().length >= 2 && (

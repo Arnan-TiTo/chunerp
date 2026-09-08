@@ -90,12 +90,37 @@ export function Field({
   )
 }
 
+/**
+ * ช่องที่ "ทำอะไรกับมันได้" — พื้นขาว ตัวอักษรเข้ม
+ *
+ * พื้นขาวคือสัญญาณเดียวที่ผู้ใช้ต้องจำ: ขาว = พิมพ์หรือเลือกได้ · เทา = ทำไม่ได้
+ * เดิมช่องปกติเป็นสีครีมอ่อน (--surface-sunken) ซึ่งห่างจากสีเทาของช่องที่
+ * แก้ไม่ได้แค่ไม่กี่ค่า มองเผิน ๆ จึงแยกไม่ออกว่าช่องไหนกรอกได้
+ *
+ * ห้ามใส่ variant `read-only:` ในคลาสชุดนี้เด็ดขาด — ในนิยามของ CSS นั้น
+ * `<select>` เข้าเงื่อนไข `:read-only` เสมอ (เพราะพิมพ์ลงไปไม่ได้) ดรอปดาวน์
+ * ที่ใช้งานได้ทุกตัวจึงถูกทาสีเป็นช่องที่แก้ไม่ได้ไปด้วย สถานะอ่านอย่างเดียว
+ * ต้องสั่งจากฝั่ง React ผ่าน `controlReadOnlyClass` เท่านั้น
+ */
 export const controlBaseClass = cn(
-  'w-full rounded border-[1.5px] border-line bg-sunken px-[13px] text-[.94rem] text-ink',
-  'placeholder:text-ink-faint transition-[border-color,background] duration-150',
-  'focus:border-forest focus:bg-white focus:outline-none',
-  'disabled:cursor-not-allowed disabled:bg-line-faint disabled:opacity-70',
-  'read-only:bg-line-faint read-only:text-ink-dim',
+  'w-full rounded border-[1.5px] border-line bg-white px-[13px] text-[.94rem] text-ink',
+  'placeholder:text-ink-faint transition-[border-color,box-shadow,background] duration-150',
+  'focus:border-forest focus:outline-none focus:ring-2 focus:ring-meadow/25',
+  'disabled:cursor-not-allowed disabled:border-line-soft disabled:bg-line-soft',
+  // Chrome ทา opacity 0.7 ให้ select:disabled เอง ถ้าไม่ล้าง ดรอปดาวน์ที่ปิด
+  // ใช้งานจะจางกว่าช่องกรอกที่ปิดใช้งาน ทั้งที่ควรดูเหมือนกัน
+  'disabled:text-ink-faint disabled:opacity-100 disabled:shadow-none disabled:ring-0',
+)
+
+/**
+ * ช่องที่แสดงค่าอย่างเดียว — เทา ไม่มีเส้นขอบเน้น และกดเข้าไปไม่ได้
+ *
+ * ใช้คู่กับ `tabIndex={-1}` ในตัว component เพื่อไม่ให้แป้น Tab วิ่งเข้ามาหยุด
+ * ที่ช่องที่ทำอะไรไม่ได้
+ */
+export const controlReadOnlyClass = cn(
+  'cursor-default border-line-soft bg-line-soft text-ink-dim',
+  'pointer-events-none select-none focus:border-line-soft focus:ring-0',
 )
 
 export const controlInvalidClass = 'border-danger focus:border-danger'

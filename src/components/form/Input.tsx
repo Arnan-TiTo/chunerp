@@ -1,7 +1,12 @@
 import { forwardRef, useState } from 'react'
 import { cn } from '@/utils/cn'
 import { Icon, type IconName } from '@/components/ui/Icon'
-import { controlBaseClass, controlInvalidClass, useFieldContext } from './Field'
+import {
+  controlBaseClass,
+  controlInvalidClass,
+  controlReadOnlyClass,
+  useFieldContext,
+} from './Field'
 
 type Size = 'md' | 'lg'
 
@@ -21,6 +26,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 ) {
   const field = useFieldContext()
   const isInvalid = invalid ?? field?.invalid ?? false
+  // ช่องที่แก้ไม่ได้ไม่ควรรับโฟกัส — คลิกแล้วมีเคอร์เซอร์กะพริบในช่องที่พิมพ์
+  // ไม่ได้ คือการบอกผู้ใช้ผิด
+  const inert = Boolean(rest.readOnly)
   return (
     <div className="relative flex w-full items-center">
       {iconLeft && (
@@ -35,12 +43,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         id={rest.id ?? field?.id}
         aria-invalid={isInvalid || undefined}
         aria-describedby={rest['aria-describedby'] ?? field?.describedBy}
+        tabIndex={inert ? -1 : rest.tabIndex}
         className={cn(
           controlBaseClass,
           HEIGHTS[inputSize],
           iconLeft && 'pl-10',
           suffix && 'pr-14',
           isInvalid && controlInvalidClass,
+          inert && controlReadOnlyClass,
           className,
         )}
         {...rest}
@@ -130,6 +140,7 @@ export const Textarea = forwardRef<
 >(function Textarea({ className, invalid, rows = 3, ...rest }, ref) {
   const field = useFieldContext()
   const isInvalid = invalid ?? field?.invalid ?? false
+  const inert = Boolean(rest.readOnly)
   return (
     <textarea
       ref={ref}
@@ -137,10 +148,12 @@ export const Textarea = forwardRef<
       id={rest.id ?? field?.id}
       aria-invalid={isInvalid || undefined}
       aria-describedby={rest['aria-describedby'] ?? field?.describedBy}
+      tabIndex={inert ? -1 : rest.tabIndex}
       className={cn(
         controlBaseClass,
         'resize-y py-2.5 leading-relaxed',
         isInvalid && controlInvalidClass,
+        inert && cn(controlReadOnlyClass, 'resize-none'),
         className,
       )}
       {...rest}
